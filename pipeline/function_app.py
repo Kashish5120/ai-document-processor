@@ -1,3 +1,6 @@
+import os
+import logging
+
 import azure.functions as func
 import azure.durable_functions as df
 from azure.durable_functions import RetryOptions
@@ -15,9 +18,29 @@ FINAL_OUTPUT_CONTAINER = config.get_value("FINAL_OUTPUT_CONTAINER")
 
 app = df.DFApp(http_auth_level=func.AuthLevel.FUNCTION)
 
-import logging
 
-# # Blob-triggered starter
+# Shared handler for blob triggers (used by both EventGrid and polling triggers)
+async def _handle_blob_trigger(
+    blob: func.InputStream,
+    client: df.DurableOrchestrationClient,
+):
+    logging.info(f"Blob Trigger - Blob Received: {blob}")
+    logging.info(f"path: {blob.name}")
+    logging.info(f"Size: {blob.length} bytes")
+    logging.info(f"URI: {blob.uri}")
+
+    blob_metadata = BlobMetadata(
+        name=blob.name,
+        container="bronze",
+        uri=blob.uri
+    )
+    logging.info(f"Blob Metadata: {blob_metadata}")
+    logging.info(f"Blob Metadata JSON: {blob_metadata.to_dict()}")
+    instance_id = await client.start_new("process_blob", client_input=blob_metadata.to_dict())
+    logging.info(f"Started orchestration {instance_id} for blob {blob.name}")
+
+
+# Production: EventGrid-based blob trigger
 @app.function_name(name="start_orchestrator_on_blob")
 @app.blob_trigger(
     arg_name="blob",
@@ -30,20 +53,24 @@ async def start_orchestrator_blob(
     blob: func.InputStream,
     client: df.DurableOrchestrationClient,
 ):
-    logging.info(f" Blob Trigger (start_orchestrator_blob) - Blob Received: {blob}") 
-    logging.info(f"path: {blob.name}")
-    logging.info(f"Size: {blob.length} bytes")
-    logging.info(f"URI: {blob.uri}")   
+    await _handle_blob_trigger(blob, client)
 
-    blob_metadata = BlobMetadata(
-        name=blob.name,
-        container="bronze",
-        uri=blob.uri
+
+# Local development: Polling-based blob trigger (only registered in Development environment)
+if os.getenv("AZURE_FUNCTIONS_ENVIRONMENT") == "Development":
+    @app.function_name(name="start_orchestrator_on_blob_local")
+    @app.blob_trigger(
+        arg_name="blob",
+        path="bronze/{name}",
+        connection="DataStorage",
+        # No source="EventGrid" — uses polling instead
     )
-    logging.info(f"Blob Metadata: {blob_metadata}")
-    logging.info(f"Blob Metadata JSON: {blob_metadata.to_dict()}")
-    instance_id = await client.start_new("process_blob", client_input=blob_metadata.to_dict())
-    logging.info(f"Started orchestration {instance_id} for blob {blob.name}")
+    @app.durable_client_input(client_name="client")
+    async def start_orchestrator_blob_local(
+        blob: func.InputStream,
+        client: df.DurableOrchestrationClient,
+    ):
+        await _handle_blob_trigger(blob, client)
 
 
 # An HTTP-triggered function with a Durable Functions client binding
