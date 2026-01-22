@@ -142,6 +142,9 @@ param userPrincipalId string
 @allowed(['Dedicated', 'FlexConsumption'])
 param functionAppHostPlan string
 
+@description('Enable storage account key access for local development. Should be false in production.')
+param allowStorageKeyAccess bool = false
+
 @allowed(['B1', 'B2', 'S1', 'S2', 'S3', 'P1v2', 'P2v2', 'P3v2', 'FC1'])
 param functionAppSKU string = (functionAppHostPlan == 'FlexConsumption') ? 'FC1' : 'S2'
 
@@ -908,7 +911,7 @@ module procFuncStorage 'br/public:avm/res/storage/storage-account:0.25.0' = {
   params: {
     name: funcStorageName
     allowBlobPublicAccess: true
-    allowSharedKeyAccess: false // Disable local authentication methods as per policy
+    allowSharedKeyAccess: allowStorageKeyAccess // Enable for local dev, disable in production
     dnsEndpointType: 'Standard'
     publicNetworkAccess: _networkIsolation?'Disabled':'Enabled'
     networkAcls: {
