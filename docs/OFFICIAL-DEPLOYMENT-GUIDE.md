@@ -49,7 +49,7 @@ The AI Document Processor (ADP) is an Azure-based accelerator that automates doc
 | Resource | Purpose |
 |----------|---------|
 | **Azure Function App** | Hosts the Durable Functions processing pipeline |
-| **Azure AI Foundry** | Provides Azure OpenAI model deployments (gpt-5-mini, text-embedding-ada-002) |
+| **Azure AI Foundry** | Provides Azure OpenAI model deployment (gpt-5-mini) |
 | **Azure AI Services** | Document Intelligence and Speech-to-Text capabilities |
 | **Azure Storage Account (Data)** | Bronze/Silver/Gold containers for document lifecycle |
 | **Azure Storage Account (Func)** | Function App deployment and runtime storage |
@@ -186,11 +186,6 @@ module aiFoundry 'br/public:avm/ptn/ai-ml/ai-foundry:0.6.0' = {
         name: 'gpt-5-mini'
         model: { format: 'OpenAI', name: 'gpt-5-mini', version: '2025-08-07' }
         sku: { name: 'GlobalStandard', capacity: 100 }
-      },
-      {
-        name: 'text-embedding-ada-002'
-        model: { format: 'OpenAI', name: 'text-embedding-ada-002', version: '2' }
-        sku: { name: 'Standard', capacity: 50 }
       }
     ]
   }
@@ -299,7 +294,6 @@ openai_model = config.get_value("OPENAI_MODEL")
 | `OPENAI_API_BASE` | AI Foundry/OpenAI endpoint URL |
 | `OPENAI_MODEL` | Model name (e.g., gpt-5-mini) |
 | `OPENAI_API_VERSION` | API version (e.g., 2024-05-01-preview) |
-| `OPENAI_API_EMBEDDING_MODEL` | Embedding model name (text-embedding-ada-002) |
 | `DATA_STORAGE_ENDPOINT` | Blob storage endpoint |
 | `DATA_STORAGE_ACCOUNT_NAME` | Data storage account name |
 | `AI_SERVICES_ENDPOINT` | Document Intelligence / Speech endpoint |
