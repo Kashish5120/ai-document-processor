@@ -24,15 +24,5 @@ echo "Uploading Blob to Azure Storage Account: $AZURE_STORAGE_ACCOUNT"
   echo "file prompts.yaml may already exist. Skipping upload"
 }
 
-
-{
-  az storage blob upload \
-    --account-name $AZURE_STORAGE_ACCOUNT \
-    --container-name "bronze" \
-    --name role_library-3.pdf \
-    --file ./data/role_library-3.pdf \
-    --auth-mode login
-  echo "Upload of role_library-3.pdf completed successfully to $AZURE_STORAGE_ACCOUNT."
-} || {
-  echo "file role_library-3.pdf may already exist. Skipping upload"
-}
+# Note: Test PDF upload moved to postDeploy.sh
+# EventGrid subscription must be created first (in postDeploy) before blob uploads can trigger the function

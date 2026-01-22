@@ -132,8 +132,8 @@ var _vnetName = _azureReuseConfig.vnetReuse ? _azureReuseConfig.existingVnetName
 param vnetAddress string = ''
 var _vnetAddress = !empty(vnetAddress) ? vnetAddress : '10.0.0.0/23'
 
-@description('Forked Git repository URL for the Static Web App')
-param userPrincipalId string
+@description('User PrincipalId - automatically set to signed-in user by azd')
+param userPrincipalId string = principalId
 
 // Environment name. This is automatically set by the 'azd' tool.
 @description('Environment name used as a tag for all resources. This is directly mapped to the azd-environment.')
@@ -354,10 +354,6 @@ var appSettings = [
   {
     name: 'AI_SERVICES_ENDPOINT'
     value: 'https://${aiFoundry.outputs.aiServicesName}.cognitiveservices.azure.com/'
-  }
-  {
-    name: 'OPENAI_API_EMBEDDING_MODEL'
-    value: 'text-embedding-ada-002'
   }
   {
     name: 'OPENAI_MODEL'
@@ -656,18 +652,6 @@ module aiFoundry 'br/public:avm/ptn/ai-ml/ai-foundry:0.6.0' = {
         }
         sku: {
           name: 'GlobalStandard'
-          capacity: 100
-        }
-      }
-      {
-        name: 'text-embedding-ada-002'
-        model: {
-          format: 'OpenAI'
-          name: 'text-embedding-ada-002'
-          version: '2'
-        }
-        sku: {
-          name: 'Standard'
           capacity: 100
         }
       }
