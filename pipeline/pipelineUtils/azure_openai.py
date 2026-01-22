@@ -10,27 +10,27 @@ config = Configuration()
 OPENAI_API_BASE = config.get_value("OPENAI_API_BASE")
 OPENAI_MODEL = config.get_value("OPENAI_MODEL")
 OPENAI_API_VERSION = config.get_value("OPENAI_API_VERSION")
-OPENAI_API_EMBEDDING_MODEL = config.get_value("OPENAI_API_EMBEDDING_MODEL")
+# OPENAI_API_EMBEDDING_MODEL = config.get_value("OPENAI_API_EMBEDDING_MODEL")
 
-def get_embeddings(text):
-    token_provider = get_bearer_token_provider(  
-        config.credential,  
-        "https://cognitiveservices.azure.com/.default"  
-    )  
+# def get_embeddings(text):
+#     token_provider = get_bearer_token_provider(  
+#         config.credential,  
+#         "https://cognitiveservices.azure.com/.default"  
+#     )  
 
-    token = config.credential.get_token("https://cognitiveservices.azure.com/.default").token
-    openai_client = AzureOpenAI(
-            azure_ad_token=token,
-            api_version = OPENAI_API_VERSION,
-            azure_endpoint =OPENAI_API_BASE
-            )
+#     token = config.credential.get_token("https://cognitiveservices.azure.com/.default").token
+#     openai_client = AzureOpenAI(
+#             azure_ad_token=token,
+#             api_version = OPENAI_API_VERSION,
+#             azure_endpoint =OPENAI_API_BASE
+#             )
     
-    embedding = openai_client.embeddings.create(
-                 input = text,
-                 model= OPENAI_API_EMBEDDING_MODEL
-             ).data[0].embedding
+#     embedding = openai_client.embeddings.create(
+#                  input = text,
+#                  model= OPENAI_API_EMBEDDING_MODEL
+#              ).data[0].embedding
     
-    return embedding
+#     return embedding
 
 
 def run_prompt(pipeline_id, system_prompt, user_prompt):
