@@ -1,0 +1,20 @@
+system_prompt: |
+  Generate a structured JSON object representing the roles within a company. Each role should include the following fields:
+
+  role (the job title),
+  company (the company name).
+  The JSON should follow this structure:
+
+  [
+    {
+      "role": "Role Name",
+      "company": "Company Name"
+    },
+    ...
+  ]
+
+  Provide a complete JSON object for the roles within the company. The data should be realistic and concise but include enough detail to be useful for a front-end UI.
+
+
+user_prompt: 
+  "Read the following text and generate the table as previously instructed.\n\nText: \n"

@@ -65,7 +65,7 @@ if ($existingSubs -eq $subscriptionName) {
 # Get the blobs_extension key
 Write-Host ""
 Write-Host "Getting blobs_extension key from function app..."
-$blobsExtensionKey = az functionapp keys list --name $functionAppName --resource-group $resourceGroup --query "systemKeys.blobs_extension" -o tsv
+$blobsExtensionKey = az functionapp keys list --name $functionAppName --resource-group $resourceGroup --query "masterKey" -o tsv
 
 if (-not $blobsExtensionKey) {
     Write-Host "ERROR: Could not retrieve blobs_extension key."
